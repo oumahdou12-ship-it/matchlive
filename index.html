@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+v<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
@@ -20,9 +20,9 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen pb-20 select-none">
+<body class="bg-slate-950 text-slate-100 min-h-screen pb-24 select-none">
 
-  <!-- شريط العنوان والشعار -->
+  <!-- Header -->
   <header class="bg-slate-900/95 backdrop-blur-md sticky top-0 z-40 border-b border-slate-800 shadow-xl">
     <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2.5">
@@ -48,7 +48,6 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <!-- زر تثبيت التطبيق في الهيدر -->
         <button id="install-header-btn" onclick="installAppPrompt()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-2.5 py-1.5 rounded-xl shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition">
           <span>📲</span> <span>تثبيت</span>
         </button>
@@ -61,11 +60,95 @@
       </div>
     </div>
 
-    <!-- شريط اختيار الأيام -->
+    <!-- Choix des jours -->
     <div class="max-w-3xl mx-auto px-4 pb-2 pt-1 flex items-center justify-between gap-2 text-xs font-bold border-t border-slate-800/60">
       <button onclick="selectDay('yesterday')" id="day-btn-yesterday" class="flex-1 py-1.5 rounded-xl transition text-slate-400 hover:text-white bg-slate-900 border border-slate-800">الأمس</button>
       <button onclick="selectDay('today')" id="day-btn-today" class="flex-1 py-1.5 rounded-xl transition bg-emerald-600 text-white shadow-md shadow-emerald-600/30 border border-emerald-500">اليوم</button>
       <button onclick="selectDay('tomorrow')" id="day-btn-tomorrow" class="flex-1 py-1.5 rounded-xl transition text-slate-400 hover:text-white bg-slate-900 border border-slate-800">الغد</button>
     </div>
 
-    <!-- ش
+    <!-- Filtre des championnats -->
+    <div class="max-w-3xl mx-auto px-4 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar text-[11px] font-bold border-t border-slate-800/40">
+      <button onclick="filterLeague('all')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-emerald-600 text-white border border-emerald-500" data-filter="all">الكل</button>
+      <button onclick="filterLeague('maroc')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="maroc">🇲🇦 المغرب</button>
+      <button onclick="filterLeague('ucl')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="ucl">🏆 أبطال أوروبا</button>
+      <button onclick="filterLeague('espagne')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="espagne">🇪🇸 إسبانيا</button>
+      <button onclick="filterLeague('angleterre')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="angleterre">🏴󠁧󠁢󠁥󠁮󠁧󠁿 إنجلترا</button>
+      <button onclick="filterLeague('italie')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="italie">🇮🇹 إيطاليا</button>
+      <button onclick="filterLeague('allemagne')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="allemagne">🇩🇪 ألمانيا</button>
+      <button onclick="filterLeague('france')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="france">🇫🇷 فرنسا</button>
+      <button onclick="filterLeague('saudi')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="saudi">🇸🇦 السعودية</button>
+      <button onclick="filterLeague('egypte')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="egypte">🇪🇬 مصر</button>
+    </div>
+  </header>
+
+  <!-- Bannière d'installation -->
+  <div id="install-banner" class="max-w-3xl mx-auto px-4 mt-3">
+    <div class="bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 border border-emerald-500/30 p-3 rounded-2xl flex items-center justify-between shadow-lg">
+      <div class="flex items-center gap-2.5">
+        <span class="text-2xl">📱</span>
+        <div>
+          <h4 class="text-xs font-bold text-white">تثبيت تطبيق ماتش لايف</h4>
+          <p class="text-[10px] text-emerald-300">لمتابعة المباريات ونتائج اليوم بسرعة</p>
+        </div>
+      </div>
+      <button onclick="installAppPrompt()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-xl shadow transition">
+        تثبيت الآن
+      </button>
+    </div>
+  </div>
+
+  <!-- Conteneur des matchs -->
+  <main id="matches-container" class="max-w-3xl mx-auto px-4 mt-4 space-y-4">
+    <!-- Rendu dynamique -->
+  </main>
+
+  <!-- Conteneur du classement -->
+  <main id="standings-container" class="max-w-3xl mx-auto px-4 mt-4 space-y-4 hidden">
+    <div class="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-xl">
+      <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
+        <h3 class="text-sm font-bold text-emerald-400 flex items-center gap-2">
+          <span>🏆</span> ترتيب البطولة الاحترافية المغربية
+        </h3>
+        <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">الموسم الحالي</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-right text-xs">
+          <thead>
+            <tr class="text-slate-400 border-b border-slate-800 pb-2">
+              <th class="py-2">#</th>
+              <th>الفريق</th>
+              <th class="text-center">لعب</th>
+              <th class="text-center">فارق</th>
+              <th class="text-center">نقاط</th>
+            </tr>
+          </thead>
+          <tbody id="standings-table-body" class="divide-y divide-slate-800/60 font-medium"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Navigation inférieure -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 z-40">
+    <div class="max-w-3xl mx-auto flex items-center justify-around py-2 text-xs">
+      <button onclick="switchTab('matches')" id="tab-matches-btn" class="flex flex-col items-center gap-1 text-emerald-400 font-bold transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+        <span>المباريات</span>
+      </button>
+
+      <button onclick="switchTab('standings')" id="tab-standings-btn" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+        <span>الترتيب</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Modal détails -->
+  <div id="match-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 w-full max-w-sm text-right shadow-2xl relative">
+      <button onclick="closeMatchModal()" class="absolute left-4 top-4 text-slate-400 hover
