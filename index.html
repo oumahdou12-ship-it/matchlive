@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ماتش لايف | MatchLive - مواعيد ونتائج المباريات</title>
+  <title>ماتش لايف | MatchLive</title>
   
-  <meta name="theme-color" content="#0f172a">
+  <meta name="theme-color" content="#090d16">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
@@ -23,10 +23,9 @@
 <body class="bg-slate-950 text-slate-100 min-h-screen pb-20 select-none">
 
   <!-- شريط العنوان والشعار -->
-  <header class="bg-slate-900/90 backdrop-blur-md sticky top-0 z-40 border-b border-slate-800 shadow-lg">
+  <header class="bg-slate-900/95 backdrop-blur-md sticky top-0 z-40 border-b border-slate-800 shadow-xl">
     <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <!-- شعار ماتش لايف المصمم بتقنية SVG -->
+      <div class="flex items-center gap-2.5">
         <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 p-0.5 shadow-lg shadow-emerald-500/20 flex items-center justify-center">
           <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
             <svg class="w-5 h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -41,15 +40,20 @@
         </div>
         <div>
           <div class="flex items-center gap-1.5">
-            <h1 class="text-lg font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 via-teal-200 to-white bg-clip-text text-transparent">ماتش لايف</h1>
-            <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold px-1.5 py-0.5 rounded">LIVE</span>
+            <h1 class="text-base font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 via-teal-200 to-white bg-clip-text text-transparent">ماتش لايف</h1>
+            <span class="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold px-1.5 py-0.5 rounded">LIVE</span>
           </div>
-          <p class="text-[10px] text-slate-400">مواعيد ونتائج المباريات المباشرة</p>
+          <p class="text-[10px] text-slate-400">مواعيد ونتائج المباريات</p>
         </div>
       </div>
 
       <div class="flex items-center gap-2">
-        <button onclick="refreshMatches()" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition border border-slate-700/50" title="تحديث">
+        <!-- زر تثبيت التطبيق في الهيدر -->
+        <button id="install-header-btn" onclick="installAppPrompt()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-2.5 py-1.5 rounded-xl shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition">
+          <span>📲</span> <span>تثبيت</span>
+        </button>
+
+        <button onclick="refreshMatches()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition border border-slate-700/60" title="تحديث">
           <svg id="refresh-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
           </svg>
@@ -57,313 +61,11 @@
       </div>
     </div>
 
-    <!-- شريط الأيام -->
-    <div class="max-w-3xl mx-auto px-4 pb-2 pt-1 flex items-center justify-between gap-2 overflow-x-auto no-scrollbar text-xs font-bold">
-      <button onclick="selectDay('yesterday')" id="day-btn-yesterday" class="flex-1 py-2 rounded-xl transition text-slate-400 hover:text-white bg-slate-900 border border-slate-800">الأمس</button>
-      <button onclick="selectDay('today')" id="day-btn-today" class="flex-1 py-2 rounded-xl transition bg-emerald-600 text-white shadow-md shadow-emerald-600/30 border border-emerald-500">اليوم</button>
-      <button onclick="selectDay('tomorrow')" id="day-btn-tomorrow" class="flex-1 py-2 rounded-xl transition text-slate-400 hover:text-white bg-slate-900 border border-slate-800">الغد</button>
+    <!-- شريط اختيار الأيام -->
+    <div class="max-w-3xl mx-auto px-4 pb-2 pt-1 flex items-center justify-between gap-2 text-xs font-bold border-t border-slate-800/60">
+      <button onclick="selectDay('yesterday')" id="day-btn-yesterday" class="flex-1 py-1.5 rounded-xl transition text-slate-400 hover:text-white bg-slate-900 border border-slate-800">الأمس</button>
+      <button onclick="selectDay('today')" id="day-btn-today" class="flex-1 py-1.5 rounded-xl transition bg-emerald-600 text-white shadow-md shadow-emerald-600/30 border border-emerald-500">اليوم</button>
+      <button onclick="selectDay('tomorrow')" id="day-btn-tomorrow" class="flex-1 py-1.5 rounded-xl transition text-slate-400 hover:text-white bg-slate-900 border border-slate-800">الغد</button>
     </div>
-  </header>
 
-  <!-- المحتوى الرئيسي للمباريات -->
-  <main id="matches-container" class="max-w-3xl mx-auto px-4 mt-4 space-y-5">
-    <!-- يتم بناء المباريات ديناميكياً هنا -->
-  </main>
-
-  <!-- صفحة جدول الترتيب -->
-  <main id="standings-container" class="max-w-3xl mx-auto px-4 mt-4 space-y-4 hidden">
-    <div class="bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-xl">
-      <h3 class="text-sm font-bold text-emerald-400 mb-3 flex items-center gap-2">
-        <span>🏆</span> ترتيب البطولة الاحترافية المغربية (إنوي)
-      </h3>
-      <div class="overflow-x-auto">
-        <table class="w-full text-right text-xs">
-          <thead>
-            <tr class="text-slate-400 border-b border-slate-800 pb-2">
-              <th class="py-2">#</th>
-              <th>الفريق</th>
-              <th class="text-center">لعب</th>
-              <th class="text-center">فارق</th>
-              <th class="text-center">نقاط</th>
-            </tr>
-          </thead>
-          <tbody id="standings-table-body" class="divide-y divide-slate-800/60 font-medium">
-            <!-- جدول الفرق -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </main>
-
-  <!-- شريط التنقل السفلي الثابت -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 z-40">
-    <div class="max-w-3xl mx-auto flex items-center justify-around py-2 text-xs">
-      <button onclick="switchTab('matches')" id="tab-matches-btn" class="flex flex-col items-center gap-1 text-emerald-400 font-bold transition">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-        </svg>
-        <span>المباريات</span>
-      </button>
-
-      <button onclick="switchTab('standings')" id="tab-standings-btn" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 transition">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-        </svg>
-        <span>الترتيب</span>
-      </button>
-    </div>
-  </nav>
-
-  <!-- نافذة تفاصيل المباراة المنبثقة -->
-  <div id="match-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 w-full max-w-sm text-right shadow-2xl relative">
-      <button onclick="closeMatchModal()" class="absolute left-4 top-4 text-slate-400 hover:text-white text-lg">✕</button>
-      <h4 id="modal-league-title" class="text-xs font-bold text-emerald-400 mb-4">تفاصيل المباراة</h4>
-      
-      <div id="modal-content" class="space-y-3">
-        <!-- المحتوى الداخلي للمباراة -->
-      </div>
-    </div>
-  </div>
-
-  <script>
-    let activeDay = 'today';
-    let activeTab = 'matches';
-
-    // قاعدة بيانات المباريات المصنفة حسب الأيام والبطولات
-    const matchesDatabase = {
-      today: [
-        {
-          league: "البطولة الاحترافية المغربية (إنوي)",
-          country: "🇲🇦",
-          matches: [
-            { id: 1, home: "الرجاء الرياضي", away: "الجيش الملكي", score: "1 - 1", time: "64'", status: "live", channel: "الرياضية Arryadia", commentator: "هشام فرج" },
-            { id: 2, home: "الوداد الرياضي", away: "نهضة بركان", score: "- : -", time: "20:00", status: "upcoming", channel: "الرياضية HD", commentator: "خليل فايد" },
-            { id: 3, home: "المغرب الفاسي", away: "اتحاد طنجة", score: "2 - 0", time: "نهاية المباراة", status: "finished", channel: "الرياضية", commentator: "محمد العدالي" }
-          ]
-        },
-        {
-          league: "الدوري الإسباني (La Liga)",
-          country: "🇪🇸",
-          matches: [
-            { id: 4, home: "ريال مدريد", away: "برشلونة", score: "2 - 1", time: "78'", status: "live", channel: "beIN Sports 1", commentator: "حفيظ دراجي" },
-            { id: 5, home: "أتلتيكو مدريد", away: "إشبيلية", score: "- : -", time: "21:00", status: "upcoming", channel: "beIN Sports 3", commentator: "علي محمد علي" }
-          ]
-        },
-        {
-          league: "الدوري الإنجليزي الممتاز (Premier League)",
-          country: "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-          matches: [
-            { id: 6, home: "مانشستر سيتي", away: "ليفربول", score: "3 - 2", time: "نهاية المباراة", status: "finished", channel: "beIN Sports Premium 1", commentator: "عصام الشوالي" },
-            { id: 7, home: "آرسنال", away: "تشيلسي", score: "- : -", time: "18:30", status: "upcoming", channel: "beIN Sports 1", commentator: "حسن العيدروس" }
-          ]
-        }
-      ],
-      yesterday: [
-        {
-          league: "دوري أبطال أوروبا",
-          country: "🇪🇺",
-          matches: [
-            { id: 8, home: "بايرن ميونخ", away: "باريس سان جيرمان", score: "2 - 0", time: "انتهت", status: "finished", channel: "beIN Sports 1", commentator: "عامر عبد الله" },
-            { id: 9, home: "إنتر ميلان", away: "أتلتيكو مدريد", score: "1 - 0", time: "انتهت", status: "finished", channel: "beIN Sports 2", commentator: "خالد الحدي" }
-          ]
-        }
-      ],
-      tomorrow: [
-        {
-          league: "البطولة الاحترافية المغربية (إنوي)",
-          country: "🇲🇦",
-          matches: [
-            { id: 10, home: "الفتح الرباطي", away: "أولمبيك آسفي", score: "- : -", time: "16:00", status: "upcoming", channel: "الرياضية", commentator: "سفيان رشيدي" },
-            { id: 11, home: "حسنية أكادير", away: "المغرب التطواني", score: "- : -", time: "18:15", status: "upcoming", channel: "الرياضية", commentator: "عادل المسعودي" }
-          ]
-        }
-      ]
-    };
-
-    const standingsData = [
-      { rank: 1, team: "الرجاء الرياضي", played: 24, diff: "+28", points: 58 },
-      { rank: 2, team: "الجيش الملكي", played: 24, diff: "+25", points: 55 },
-      { rank: 3, team: "نهضة بركان", played: 24, diff: "+14", points: 46 },
-      { rank: 4, team: "الوداد الرياضي", played: 24, diff: "+10", points: 42 },
-      { rank: 5, team: "الفتح الرباطي", played: 24, diff: "+6", points: 39 },
-      { rank: 6, team: "المغرب الفاسي", played: 24, diff: "+1", points: 34 }
-    ];
-
-    function renderMatches() {
-      const container = document.getElementById('matches-container');
-      container.innerHTML = '';
-
-      const leagues = matchesDatabase[activeDay] || [];
-
-      if (leagues.length === 0) {
-        container.innerHTML = `
-          <div class="text-center py-16 bg-slate-900 rounded-3xl border border-slate-800">
-            <span class="text-4xl block mb-2">⚽</span>
-            <p class="text-slate-400 text-xs">لا توجد مباريات مسجلة لهذا اليوم</p>
-          </div>
-        `;
-        return;
-      }
-
-      leagues.forEach(leagueItem => {
-        const leagueCard = document.createElement('div');
-        leagueCard.className = "bg-slate-900 rounded-3xl p-4 border border-slate-800/80 shadow-md space-y-2.5";
-
-        let matchesHTML = '';
-        leagueItem.matches.forEach(m => {
-          let statusBadge = '';
-          if (m.status === 'live') {
-            statusBadge = `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] font-extrabold px-2 py-0.5 rounded-full flex items-center gap-1 animate-pulse"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>${m.time}</span>`;
-          } else if (m.status === 'finished') {
-            statusBadge = `<span class="bg-slate-800 text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded-full">انتهت</span>`;
-          } else {
-            statusBadge = `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px] font-bold px-2 py-0.5 rounded-xl font-mono">${m.time}</span>`;
-          }
-
-          matchesHTML += `
-            <div onclick="openMatchDetails(${m.id})" class="bg-slate-950/70 hover:bg-slate-800/60 p-3 rounded-2xl border border-slate-800/60 cursor-pointer transition flex items-center justify-between">
-              <!-- الفريق المضيف -->
-              <div class="flex-1 text-right">
-                <span class="font-bold text-xs sm:text-sm text-slate-200">${m.home}</span>
-              </div>
-
-              <!-- النتيجة وحالة المباراة -->
-              <div class="px-3 flex flex-col items-center min-w-[90px]">
-                <span class="text-base font-extrabold font-mono tracking-wider text-white">${m.score}</span>
-                ${statusBadge}
-              </div>
-
-              <!-- الفريق الضيف -->
-              <div class="flex-1 text-left">
-                <span class="font-bold text-xs sm:text-sm text-slate-200">${m.away}</span>
-              </div>
-            </div>
-          `;
-        });
-
-        leagueCard.innerHTML = `
-          <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5 mb-2">
-            <h3 class="text-xs sm:text-sm font-bold text-emerald-400 flex items-center gap-2">
-              <span>${leagueItem.country}</span> ${leagueItem.league}
-            </h3>
-            <span class="text-[10px] text-slate-400 font-medium">${leagueItem.matches.length} مباريات</span>
-          </div>
-          <div class="space-y-2">
-            ${matchesHTML}
-          </div>
-        `;
-
-        container.appendChild(leagueCard);
-      });
-    }
-
-    function renderStandings() {
-      const tbody = document.getElementById('standings-table-body');
-      tbody.innerHTML = '';
-      standingsData.forEach(row => {
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-800/40 transition";
-        tr.innerHTML = `
-          <td class="py-2.5 font-bold ${row.rank <= 2 ? 'text-emerald-400' : 'text-slate-400'}">${row.rank}</td>
-          <td class="font-bold text-slate-200">${row.team}</td>
-          <td class="text-center text-slate-400">${row.played}</td>
-          <td class="text-center text-slate-400 font-mono">${row.diff}</td>
-          <td class="text-center font-bold text-emerald-400 font-mono">${row.points}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function selectDay(day) {
-      activeDay = day;
-      ['yesterday', 'today', 'tomorrow'].forEach(d => {
-        const btn = document.getElementById(`day-btn-${d}`);
-        if (d === day) {
-          btn.className = "flex-1 py-2 rounded-xl transition bg-emerald-600 text-white shadow-md shadow-emerald-600/30 border border-emerald-500 font-bold";
-        } else {
-          btn.className = "flex-1 py-2 rounded-xl transition text-slate-400 hover:text-white bg-slate-900 border border-slate-800 font-bold";
-        }
-      });
-      renderMatches();
-    }
-
-    function switchTab(tab) {
-      activeTab = tab;
-      const matchesCont = document.getElementById('matches-container');
-      const standingsCont = document.getElementById('standings-container');
-      const matchBtn = document.getElementById('tab-matches-btn');
-      const standingsBtn = document.getElementById('tab-standings-btn');
-
-      if (tab === 'matches') {
-        matchesCont.classList.remove('hidden');
-        standingsCont.classList.add('hidden');
-        matchBtn.className = "flex flex-col items-center gap-1 text-emerald-400 font-bold transition";
-        standingsBtn.className = "flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 transition";
-      } else {
-        matchesCont.classList.add('hidden');
-        standingsCont.classList.remove('hidden');
-        matchBtn.className = "flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 transition";
-        standingsBtn.className = "flex flex-col items-center gap-1 text-emerald-400 font-bold transition";
-        renderStandings();
-      }
-    }
-
-    function openMatchDetails(id) {
-      let match = null;
-      let league = "";
-      Object.values(matchesDatabase).forEach(dayLeagues => {
-        dayLeagues.forEach(l => {
-          const m = l.matches.find(item => item.id === id);
-          if (m) {
-            match = m;
-            league = l.league;
-          }
-        });
-      });
-
-      if (!match) return;
-
-      const modal = document.getElementById('match-modal');
-      document.getElementById('modal-league-title').innerText = league;
-      document.getElementById('modal-content').innerHTML = `
-        <div class="text-center p-3 bg-slate-950 rounded-2xl border border-slate-800 mb-2">
-          <div class="flex justify-between items-center text-sm font-bold text-white mb-2">
-            <span>${match.home}</span>
-            <span class="text-emerald-400 font-mono text-base">${match.score}</span>
-            <span>${match.away}</span>
-          </div>
-          <span class="text-xs text-slate-400">${match.time}</span>
-        </div>
-        <div class="space-y-1.5 text-xs text-slate-300">
-          <div class="flex justify-between p-2 rounded-xl bg-slate-950/60 border border-slate-800">
-            <span class="text-slate-400">📺 القناة الناقلة:</span>
-            <span class="font-bold text-emerald-400">${match.channel}</span>
-          </div>
-          <div class="flex justify-between p-2 rounded-xl bg-slate-950/60 border border-slate-800">
-            <span class="text-slate-400">🎙️ المعلق:</span>
-            <span class="font-bold text-white">${match.commentator}</span>
-          </div>
-        </div>
-      `;
-      modal.classList.remove('hidden');
-    }
-
-    function closeMatchModal() {
-      document.getElementById('match-modal').classList.add('hidden');
-    }
-
-    function refreshMatches() {
-      const icon = document.getElementById('refresh-icon');
-      icon.classList.add('animate-spin');
-      setTimeout(() => {
-        icon.classList.remove('animate-spin');
-        renderMatches();
-      }, 500);
-    }
-
-    // التشغيل الأولي
-    renderMatches();
-  </script>
-</body>
-</html>
+    <!-- ش
