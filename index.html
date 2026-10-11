@@ -22,7 +22,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen pb-24 select-none">
 
-  <!-- شريط العنوان -->
+  <!-- En-tête -->
   <header class="bg-slate-900/95 backdrop-blur-md sticky top-0 z-40 border-b border-slate-800 shadow-xl">
     <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2.5">
@@ -43,7 +43,7 @@
             <h1 class="text-base font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 via-teal-200 to-white bg-clip-text text-transparent">ماتش لايف</h1>
             <span class="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold px-1.5 py-0.5 rounded">LIVE</span>
           </div>
-          <p id="live-indicator-text" class="text-[10px] text-slate-400">مباريات رسمية مباشرة</p>
+          <p class="text-[10px] text-slate-400">مواعيد ونتائج المباريات الرسمية</p>
         </div>
       </div>
 
@@ -52,7 +52,7 @@
           <span>📲</span> <span>تثبيت</span>
         </button>
 
-        <button onclick="fetchMatchesForSelectedDay()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition border border-slate-700/60" title="تحديث المباريات">
+        <button onclick="refreshMatches()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition border border-slate-700/60" title="تحديث">
           <svg id="refresh-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
           </svg>
@@ -60,232 +60,19 @@
       </div>
     </div>
 
-    <!-- اختيار الأيام -->
+    <!-- Barre des jours -->
     <div class="max-w-3xl mx-auto px-4 pb-2 pt-1 flex items-center justify-between gap-2 text-xs font-bold border-t border-slate-800/60">
       <button onclick="selectDay('yesterday')" id="day-btn-yesterday" class="flex-1 py-1.5 rounded-xl transition text-slate-400 hover:text-white bg-slate-900 border border-slate-800">الأمس</button>
       <button onclick="selectDay('today')" id="day-btn-today" class="flex-1 py-1.5 rounded-xl transition bg-emerald-600 text-white shadow-md shadow-emerald-600/30 border border-emerald-500">اليوم</button>
       <button onclick="selectDay('tomorrow')" id="day-btn-tomorrow" class="flex-1 py-1.5 rounded-xl transition text-slate-400 hover:text-white bg-slate-900 border border-slate-800">الغد</button>
     </div>
-  </header>
 
-  <!-- بنر التثبيت -->
-  <div id="install-banner" class="max-w-3xl mx-auto px-4 mt-3 hidden">
-    <div class="bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 border border-emerald-500/30 p-3 rounded-2xl flex items-center justify-between shadow-lg">
-      <div class="flex items-center gap-2.5">
-        <span class="text-2xl">📱</span>
-        <div>
-          <h4 class="text-xs font-bold text-white">تثبيت تطبيق ماتش لايف</h4>
-          <p class="text-[10px] text-emerald-300">لمتابعة المباريات ونتائج اليوم بسرعة</p>
-        </div>
-      </div>
-      <button onclick="installAppPrompt()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-xl shadow transition">
-        تثبيت الآن
-      </button>
-    </div>
-  </div>
-
-  <!-- مكان عرض المباريات -->
-  <main id="matches-container" class="max-w-3xl mx-auto px-4 mt-4 space-y-4">
-    <div class="text-center py-16 text-emerald-400 font-bold text-xs flex flex-col items-center gap-2">
-      <div class="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-      <span>جاري الاتصال والتحقق من مباريات اليوم الرسمية... ⚽</span>
-    </div>
-  </main>
-
-  <script>
-    const API_KEY = "65b4b137b7d84535b40b50ce22d9e2c5";
-    let activeDay = "today";
-
-    function getDateStr(offsetDays = 0) {
-      const d = new Date();
-      d.setDate(d.getDate() + offsetDays);
-      return d.toISOString().split("T")[0];
-    }
-
-    function selectDay(day) {
-      activeDay = day;
-      const days = ["yesterday", "today", "tomorrow"];
-      days.forEach(d => {
-        const btn = document.getElementById("day-btn-" + d);
-        if (btn) {
-          if (d === day) {
-            btn.className = "flex-1 py-1.5 rounded-xl transition bg-emerald-600 text-white shadow-md shadow-emerald-600/30 border border-emerald-500 font-bold";
-          } else {
-            btn.className = "flex-1 py-1.5 rounded-xl transition text-slate-400 hover:text-white bg-slate-900 border border-slate-800 font-bold";
-          }
-        }
-      });
-      fetchMatchesForSelectedDay();
-    }
-
-    async function fetchMatchesForSelectedDay() {
-      const container = document.getElementById("matches-container");
-      const refreshIcon = document.getElementById("refresh-icon");
-      if (refreshIcon) refreshIcon.classList.add("animate-spin");
-
-      container.innerHTML = `
-        <div class="text-center py-16 text-emerald-400 font-bold text-xs flex flex-col items-center gap-2">
-          <div class="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-          <span>جاري جلب المباريات الحية... ⚽</span>
-        </div>
-      `;
-
-      let targetDate = getDateStr(0);
-      if (activeDay === "yesterday") targetDate = getDateStr(-1);
-      if (activeDay === "tomorrow") targetDate = getDateStr(1);
-
-      const targetUrl = `https://api.football-data.org/v4/matches?dateFrom=${targetDate}&dateTo=${targetDate}`;
-      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-
-      try {
-        const response = await fetch(proxyUrl, {
-          headers: {
-            "X-Auth-Token": API_KEY
-          }
-        });
-
-        if (!response.ok) throw new Error("تعذر جلب البيانات");
-
-        const data = await response.json();
-        if (data && data.matches && data.matches.length > 0) {
-          renderApiMatches(data.matches);
-        } else {
-          container.innerHTML = `
-            <div class="text-center py-16 bg-slate-900 rounded-3xl border border-slate-800">
-              <span class="text-4xl block mb-2">⚽</span>
-              <p class="text-slate-300 font-bold text-sm">لا توجد مباريات مبرمجة في هذا اليوم</p>
-              <p class="text-slate-500 text-xs mt-1">تاريخ: ${targetDate}</p>
-            </div>
-          `;
-        }
-      } catch (err) {
-        console.error("API error:", err);
-        container.innerHTML = `
-          <div class="text-center py-12 bg-slate-900 rounded-3xl border border-slate-800 px-4">
-            <span class="text-3xl block mb-2">⚠️</span>
-            <p class="text-slate-300 font-bold text-xs mb-3">تم الوصول للحد المؤقت لطلبات الـ API أو اتصال الإنترنت ضعيف.</p>
-            <button onclick="fetchMatchesForSelectedDay()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition">
-              إعادة المحاولة ⟳
-            </button>
-          </div>
-        `;
-      } finally {
-        if (refreshIcon) refreshIcon.classList.remove("animate-spin");
-      }
-    }
-
-    function renderApiMatches(matches) {
-      const container = document.getElementById("matches-container");
-      container.innerHTML = "";
-
-      // تجميع المباريات حسب اسم الدوري
-      const leagues = {};
-      matches.forEach(m => {
-        const leagueName = m.competition ? m.competition.name : "بطولات أخرى";
-        const emblem = m.competition && m.competition.emblem ? m.competition.emblem : "";
-        if (!leagues[leagueName]) {
-          leagues[leagueName] = { name: leagueName, emblem: emblem, matches: [] };
-        }
-        leagues[leagueName].matches.push(m);
-      });
-
-      Object.values(leagues).forEach(leagueGroup => {
-        const leagueCard = document.createElement("div");
-        leagueCard.className = "bg-slate-900 rounded-3xl p-4 border border-slate-800/80 shadow-md space-y-2.5";
-
-        let matchesHTML = "";
-        leagueGroup.matches.forEach(m => {
-          const homeTeam = m.homeTeam ? m.homeTeam.name : "الفريق 1";
-          const awayTeam = m.awayTeam ? m.awayTeam.name : "الفريق 2";
-          const homeCrest = m.homeTeam && m.homeTeam.crest ? m.homeTeam.crest : "";
-          const awayCrest = m.awayTeam && m.awayTeam.crest ? m.awayTeam.crest : "";
-
-          // التوقيت بنظام المغرب المحلي
-          let matchTime = "--:--";
-          if (m.utcDate) {
-            const dateObj = new Date(m.utcDate);
-            matchTime = dateObj.toLocaleTimeString("ar-MA", { hour: "2-digit", minute: "2-digit", hour12: false });
-          }
-
-          let scoreDisplay = "- : -";
-          let statusBadge = "";
-
-          if (m.status === "IN_PLAY" || m.status === "PAUSED") {
-            const hScore = m.score && m.score.fullTime && m.score.fullTime.home !== null ? m.score.fullTime.home : 0;
-            const aScore = m.score && m.score.fullTime && m.score.fullTime.away !== null ? m.score.fullTime.away : 0;
-            scoreDisplay = `${hScore} - ${aScore}`;
-            statusBadge = `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] font-extrabold px-2 py-0.5 rounded-full flex items-center gap-1 animate-pulse"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>مباشر</span>`;
-          } else if (m.status === "FINISHED") {
-            const hScore = m.score && m.score.fullTime && m.score.fullTime.home !== null ? m.score.fullTime.home : 0;
-            const aScore = m.score && m.score.fullTime && m.score.fullTime.away !== null ? m.score.fullTime.away : 0;
-            scoreDisplay = `${hScore} - ${aScore}`;
-            statusBadge = `<span class="bg-slate-800 text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded-full">انتهت</span>`;
-          } else {
-            statusBadge = `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px] font-bold px-2 py-0.5 rounded-xl font-mono">${matchTime}</span>`;
-          }
-
-          matchesHTML += `
-            <div class="bg-slate-950/70 hover:bg-slate-800/60 p-3 rounded-2xl border border-slate-800/60 transition flex items-center justify-between">
-              <!-- المضيف -->
-              <div class="flex-1 text-right flex items-center gap-2 justify-start">
-                ${homeCrest ? `<img src="${homeCrest}" alt="" class="w-5 h-5 object-contain shrink-0" onerror="this.style.display='none'">` : ''}
-                <span class="font-bold text-xs sm:text-sm text-slate-200 truncate">${homeTeam}</span>
-              </div>
-
-              <!-- النتيجة والوقت -->
-              <div class="px-3 flex flex-col items-center min-w-[90px]">
-                <span class="text-base font-extrabold font-mono tracking-wider text-white">${scoreDisplay}</span>
-                ${statusBadge}
-              </div>
-
-              <!-- الضيف -->
-              <div class="flex-1 text-left flex items-center gap-2 justify-end">
-                <span class="font-bold text-xs sm:text-sm text-slate-200 truncate">${awayTeam}</span>
-                ${awayCrest ? `<img src="${awayCrest}" alt="" class="w-5 h-5 object-contain shrink-0" onerror="this.style.display='none'">` : ''}
-              </div>
-            </div>
-          `;
-        });
-
-        leagueCard.innerHTML = `
-          <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5 mb-2">
-            <h3 class="text-xs sm:text-sm font-bold text-emerald-400 flex items-center gap-2">
-              ${leagueGroup.emblem ? `<img src="${leagueGroup.emblem}" alt="" class="w-4 h-4 object-contain" onerror="this.style.display='none'">` : '🏆'}
-              <span>${leagueGroup.name}</span>
-            </h3>
-            <span class="text-[10px] text-slate-400 font-medium">${leagueGroup.matches.length} مباريات</span>
-          </div>
-          <div class="space-y-2">
-            ${matchesHTML}
-          </div>
-        `;
-
-        container.appendChild(leagueCard);
-      });
-    }
-
-    // تثبيت PWA
-    let deferredPrompt;
-    window.addEventListener("beforeinstallprompt", (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      const banner = document.getElementById("install-banner");
-      if (banner) banner.classList.remove("hidden");
-    });
-
-    function installAppPrompt() {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(() => {
-          deferredPrompt = null;
-        });
-      } else {
-        alert("لتثبيت التطبيق على هاتفك:\n1. اضغط على خيارات المتصفح (⋮ الثلاث نقاط).\n2. اختر 'إضافة إلى الشاشة الرئيسية' (Add to Home screen).");
-      }
-    }
-
-    // تشغيل الجلب فور فتح الموقع
-    fetchMatchesForSelectedDay();
-  </script>
-</body>
-</html>
+    <!-- Filtres des compétitions -->
+    <div class="max-w-3xl mx-auto px-4 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar text-[11px] font-bold border-t border-slate-800/40">
+      <button onclick="filterLeague('all')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-emerald-600 text-white border border-emerald-500" data-filter="all">الكل</button>
+      <button onclick="filterLeague('maroc')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="maroc">🇲🇦 المغرب</button>
+      <button onclick="filterLeague('ucl')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="ucl">🏆 أبطال أوروبا</button>
+      <button onclick="filterLeague('espagne')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="espagne">🇪🇸 إسبانيا</button>
+      <button onclick="filterLeague('angleterre')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="angleterre">🏴󠁧󠁢󠁥󠁮󠁧󠁿 إنجلترا</button>
+      <button onclick="filterLeague('italie')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="italie">🇮🇹 إيطاليا</button>
+      <button onclick="filterLeague('saudi')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-40
