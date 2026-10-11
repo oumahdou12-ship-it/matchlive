@@ -135,3 +135,157 @@
       if (activeDay === "tomorrow") targetDate = getDateStr(1);
 
       const targetUrl = `https://api.football-data.org/v4/matches?dateFrom=${targetDate}&dateTo=${targetDate}`;
+      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+
+      try {
+        const response = await fetch(proxyUrl, {
+          headers: {
+            "X-Auth-Token": API_KEY
+          }
+        });
+
+        if (!response.ok) throw new Error("تعذر جلب البيانات");
+
+        const data = await response.json();
+        if (data && data.matches && data.matches.length > 0) {
+          renderApiMatches(data.matches);
+        } else {
+          container.innerHTML = `
+            <div class="text-center py-16 bg-slate-900 rounded-3xl border border-slate-800">
+              <span class="text-4xl block mb-2">⚽</span>
+              <p class="text-slate-300 font-bold text-sm">لا توجد مباريات مبرمجة في هذا اليوم</p>
+              <p class="text-slate-500 text-xs mt-1">تاريخ: ${targetDate}</p>
+            </div>
+          `;
+        }
+      } catch (err) {
+        console.error("API error:", err);
+        container.innerHTML = `
+          <div class="text-center py-12 bg-slate-900 rounded-3xl border border-slate-800 px-4">
+            <span class="text-3xl block mb-2">⚠️</span>
+            <p class="text-slate-300 font-bold text-xs mb-3">تم الوصول للحد المؤقت لطلبات الـ API أو اتصال الإنترنت ضعيف.</p>
+            <button onclick="fetchMatchesForSelectedDay()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition">
+              إعادة المحاولة ⟳
+            </button>
+          </div>
+        `;
+      } finally {
+        if (refreshIcon) refreshIcon.classList.remove("animate-spin");
+      }
+    }
+
+    function renderApiMatches(matches) {
+      const container = document.getElementById("matches-container");
+      container.innerHTML = "";
+
+      // تجميع المباريات حسب اسم الدوري
+      const leagues = {};
+      matches.forEach(m => {
+        const leagueName = m.competition ? m.competition.name : "بطولات أخرى";
+        const emblem = m.competition && m.competition.emblem ? m.competition.emblem : "";
+        if (!leagues[leagueName]) {
+          leagues[leagueName] = { name: leagueName, emblem: emblem, matches: [] };
+        }
+        leagues[leagueName].matches.push(m);
+      });
+
+      Object.values(leagues).forEach(leagueGroup => {
+        const leagueCard = document.createElement("div");
+        leagueCard.className = "bg-slate-900 rounded-3xl p-4 border border-slate-800/80 shadow-md space-y-2.5";
+
+        let matchesHTML = "";
+        leagueGroup.matches.forEach(m => {
+          const homeTeam = m.homeTeam ? m.homeTeam.name : "الفريق 1";
+          const awayTeam = m.awayTeam ? m.awayTeam.name : "الفريق 2";
+          const homeCrest = m.homeTeam && m.homeTeam.crest ? m.homeTeam.crest : "";
+          const awayCrest = m.awayTeam && m.awayTeam.crest ? m.awayTeam.crest : "";
+
+          // التوقيت بنظام المغرب المحلي
+          let matchTime = "--:--";
+          if (m.utcDate) {
+            const dateObj = new Date(m.utcDate);
+            matchTime = dateObj.toLocaleTimeString("ar-MA", { hour: "2-digit", minute: "2-digit", hour12: false });
+          }
+
+          let scoreDisplay = "- : -";
+          let statusBadge = "";
+
+          if (m.status === "IN_PLAY" || m.status === "PAUSED") {
+            const hScore = m.score && m.score.fullTime && m.score.fullTime.home !== null ? m.score.fullTime.home : 0;
+            const aScore = m.score && m.score.fullTime && m.score.fullTime.away !== null ? m.score.fullTime.away : 0;
+            scoreDisplay = `${hScore} - ${aScore}`;
+            statusBadge = `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] font-extrabold px-2 py-0.5 rounded-full flex items-center gap-1 animate-pulse"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>مباشر</span>`;
+          } else if (m.status === "FINISHED") {
+            const hScore = m.score && m.score.fullTime && m.score.fullTime.home !== null ? m.score.fullTime.home : 0;
+            const aScore = m.score && m.score.fullTime && m.score.fullTime.away !== null ? m.score.fullTime.away : 0;
+            scoreDisplay = `${hScore} - ${aScore}`;
+            statusBadge = `<span class="bg-slate-800 text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded-full">انتهت</span>`;
+          } else {
+            statusBadge = `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px] font-bold px-2 py-0.5 rounded-xl font-mono">${matchTime}</span>`;
+          }
+
+          matchesHTML += `
+            <div class="bg-slate-950/70 hover:bg-slate-800/60 p-3 rounded-2xl border border-slate-800/60 transition flex items-center justify-between">
+              <!-- المضيف -->
+              <div class="flex-1 text-right flex items-center gap-2 justify-start">
+                ${homeCrest ? `<img src="${homeCrest}" alt="" class="w-5 h-5 object-contain shrink-0" onerror="this.style.display='none'">` : ''}
+                <span class="font-bold text-xs sm:text-sm text-slate-200 truncate">${homeTeam}</span>
+              </div>
+
+              <!-- النتيجة والوقت -->
+              <div class="px-3 flex flex-col items-center min-w-[90px]">
+                <span class="text-base font-extrabold font-mono tracking-wider text-white">${scoreDisplay}</span>
+                ${statusBadge}
+              </div>
+
+              <!-- الضيف -->
+              <div class="flex-1 text-left flex items-center gap-2 justify-end">
+                <span class="font-bold text-xs sm:text-sm text-slate-200 truncate">${awayTeam}</span>
+                ${awayCrest ? `<img src="${awayCrest}" alt="" class="w-5 h-5 object-contain shrink-0" onerror="this.style.display='none'">` : ''}
+              </div>
+            </div>
+          `;
+        });
+
+        leagueCard.innerHTML = `
+          <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5 mb-2">
+            <h3 class="text-xs sm:text-sm font-bold text-emerald-400 flex items-center gap-2">
+              ${leagueGroup.emblem ? `<img src="${leagueGroup.emblem}" alt="" class="w-4 h-4 object-contain" onerror="this.style.display='none'">` : '🏆'}
+              <span>${leagueGroup.name}</span>
+            </h3>
+            <span class="text-[10px] text-slate-400 font-medium">${leagueGroup.matches.length} مباريات</span>
+          </div>
+          <div class="space-y-2">
+            ${matchesHTML}
+          </div>
+        `;
+
+        container.appendChild(leagueCard);
+      });
+    }
+
+    // تثبيت PWA
+    let deferredPrompt;
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const banner = document.getElementById("install-banner");
+      if (banner) banner.classList.remove("hidden");
+    });
+
+    function installAppPrompt() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => {
+          deferredPrompt = null;
+        });
+      } else {
+        alert("لتثبيت التطبيق على هاتفك:\n1. اضغط على خيارات المتصفح (⋮ الثلاث نقاط).\n2. اختر 'إضافة إلى الشاشة الرئيسية' (Add to Home screen).");
+      }
+    }
+
+    // تشغيل الجلب فور فتح الموقع
+    fetchMatchesForSelectedDay();
+  </script>
+</body>
+</html>
