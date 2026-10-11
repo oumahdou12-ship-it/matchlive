@@ -4,75 +4,144 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ماتش لايف | MatchLive</title>
-  
-  <meta name="theme-color" content="#090d16">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Tajawal', sans-serif; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen pb-24 select-none">
+<body class="bg-slate-950 text-slate-100 min-h-screen pb-16">
 
-  <!-- En-tête -->
-  <header class="bg-slate-900/95 backdrop-blur-md sticky top-0 z-40 border-b border-slate-800 shadow-xl">
-    <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-2.5">
-        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 p-0.5 shadow-lg shadow-emerald-500/20 flex items-center justify-center">
-          <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-            <svg class="w-5 h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="m4.93 4.93 4.24 4.24"></path>
-              <path d="m14.83 9.17 4.24-4.24"></path>
-              <path d="m14.83 14.83 4.24 4.24"></path>
-              <path d="m9.17 14.83-4.24 4.24"></path>
-              <circle cx="12" cy="12" r="4"></circle>
-            </svg>
-          </div>
-        </div>
-        <div>
-          <div class="flex items-center gap-1.5">
-            <h1 class="text-base font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 via-teal-200 to-white bg-clip-text text-transparent">ماتش لايف</h1>
-            <span class="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold px-1.5 py-0.5 rounded">LIVE</span>
-          </div>
-          <p class="text-[10px] text-slate-400">مواعيد ونتائج المباريات الرسمية</p>
-        </div>
-      </div>
-
+  <!-- الهيدر والشعار -->
+  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50 px-4 py-3 shadow-md">
+    <div class="max-w-2xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <button id="install-header-btn" onclick="installAppPrompt()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-2.5 py-1.5 rounded-xl shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition">
-          <span>📲</span> <span>تثبيت</span>
-        </button>
-
-        <button onclick="refreshMatches()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition border border-slate-700/60" title="تحديث">
-          <svg id="refresh-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-          </svg>
-        </button>
+        <div class="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center font-black text-slate-950 text-lg shadow">⚽</div>
+        <div>
+          <h1 class="text-base font-extrabold text-white leading-tight">ماتش لايف <span class="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30">مباشر</span></h1>
+          <p class="text-[10px] text-slate-400">مواعيد ونتائج المباريات</p>
+        </div>
       </div>
+      <button onclick="location.reload()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded-xl border border-slate-700 transition font-bold">تحديث ⟳</button>
     </div>
 
-    <!-- Barre des jours -->
-    <div class="max-w-3xl mx-auto px-4 pb-2 pt-1 flex items-center justify-between gap-2 text-xs font-bold border-t border-slate-800/60">
-      <button onclick="selectDay('yesterday')" id="day-btn-yesterday" class="flex-1 py-1.5 rounded-xl transition text-slate-400 hover:text-white bg-slate-900 border border-slate-800">الأمس</button>
-      <button onclick="selectDay('today')" id="day-btn-today" class="flex-1 py-1.5 rounded-xl transition bg-emerald-600 text-white shadow-md shadow-emerald-600/30 border border-emerald-500">اليوم</button>
-      <button onclick="selectDay('tomorrow')" id="day-btn-tomorrow" class="flex-1 py-1.5 rounded-xl transition text-slate-400 hover:text-white bg-slate-900 border border-slate-800">الغد</button>
+    <!-- أزرار الأيام -->
+    <div class="max-w-2xl mx-auto mt-3 flex gap-2 text-xs font-bold">
+      <button onclick="setDay('yesterday')" id="btn-yesterday" class="flex-1 py-1.5 rounded-xl bg-slate-800 text-slate-400">الأمس</button>
+      <button onclick="setDay('today')" id="btn-today" class="flex-1 py-1.5 rounded-xl bg-emerald-600 text-white">اليوم</button>
+      <button onclick="setDay('tomorrow')" id="btn-tomorrow" class="flex-1 py-1.5 rounded-xl bg-slate-800 text-slate-400">الغد</button>
     </div>
+  </header>
 
-    <!-- Filtres des compétitions -->
-    <div class="max-w-3xl mx-auto px-4 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar text-[11px] font-bold border-t border-slate-800/40">
-      <button onclick="filterLeague('all')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-emerald-600 text-white border border-emerald-500" data-filter="all">الكل</button>
-      <button onclick="filterLeague('maroc')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="maroc">🇲🇦 المغرب</button>
-      <button onclick="filterLeague('ucl')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="ucl">🏆 أبطال أوروبا</button>
-      <button onclick="filterLeague('espagne')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="espagne">🇪🇸 إسبانيا</button>
-      <button onclick="filterLeague('angleterre')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="angleterre">🏴󠁧󠁢󠁥󠁮󠁧󠁿 إنجلترا</button>
-      <button onclick="filterLeague('italie')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:text-white" data-filter="italie">🇮🇹 إيطاليا</button>
-      <button onclick="filterLeague('saudi')" class="league-filter-btn shrink-0 px-3 py-1 rounded-xl bg-slate-900 text-slate-40
+  <!-- محتوى المباريات -->
+  <main id="app-content" class="max-w-2xl mx-auto px-4 mt-4 space-y-4">
+    <!-- كيطلعو المباريات هنا تلقائياً -->
+  </main>
+
+  <script>
+    var currentDay = 'today';
+
+    var db = {
+      today: [
+        {
+          league: "🇲🇦 البطولة الاحترافية المغربية",
+          matches: [
+            { h: "الرجاء الرياضي", a: "الجيش الملكي", s: "1 - 1", t: "68'", live: true },
+            { h: "الوداد الرياضي", a: "نهضة بركان", s: "- : -", t: "20:00", live: false },
+            { h: "المغرب الفاسي", a: "اتحاد طنجة", s: "2 - 0", t: "انتهت", live: false }
+          ]
+        },
+        {
+          league: "🇪🇸 الدوري الإسباني (La Liga)",
+          matches: [
+            { h: "ريال مدريد", a: "برشلونة", s: "2 - 1", t: "82'", live: true },
+            { h: "أتلتيكو مدريد", a: "إشبيلية", s: "- : -", t: "21:00", live: false }
+          ]
+        },
+        {
+          league: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 الدوري الإنجليزي الممتاز",
+          matches: [
+            { h: "مانشستر سيتي", a: "ليفربول", s: "3 - 2", t: "انتهت", live: false },
+            { h: "آرسنال", a: "تشيلسي", s: "- : -", t: "18:30", live: false }
+          ]
+        },
+        {
+          league: "🇸🇦 دوري روشن السعودي",
+          matches: [
+            { h: "الهلال", a: "النصر", s: "2 - 2", t: "75'", live: true },
+            { h: "الاتحاد", a: "الأهلي", s: "- : -", t: "19:00", live: false }
+          ]
+        }
+      ],
+      yesterday: [
+        {
+          league: "🇪🇸 الدوري الإسباني",
+          matches: [
+            { h: "ريال سوسيداد", a: "خيتافي", s: "2 - 0", t: "انتهت", live: false }
+          ]
+        },
+        {
+          league: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 الدوري الإنجليزي",
+          matches: [
+            { h: "مانشستر يونايتد", a: "نيوكاسل", s: "3 - 2", t: "انتهت", live: false }
+          ]
+        }
+      ],
+      tomorrow: [
+        {
+          league: "🇲🇦 البطولة الاحترافية المغربية",
+          matches: [
+            { h: "الفتح الرباطي", a: "أولمبيك آسفي", s: "- : -", t: "16:00", live: false },
+            { h: "حسنية أكادير", a: "المغرب التطواني", s: "- : -", t: "18:15", live: false }
+          ]
+        }
+      ]
+    };
+
+    function draw() {
+      var box = document.getElementById('app-content');
+      box.innerHTML = '';
+      var list = db[currentDay] || [];
+
+      for (var i = 0; i < list.length; i++) {
+        var card = document.createElement('div');
+        card.className = "bg-slate-900 border border-slate-800 rounded-2xl p-3.5 shadow space-y-2";
+        
+        var html = '<h3 class="text-xs font-bold text-emerald-400 border-b border-slate-800 pb-2">' + list[i].league + '</h3><div class="space-y-2">';
+        
+        for (var j = 0; j < list[i].matches.length; j++) {
+          var m = list[i].matches[j];
+          var badge = m.live 
+            ? '<span class="text-[10px] font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-full animate-pulse">' + m.t + '</span>'
+            : '<span class="text-[11px] font-bold text-slate-400">' + m.t + '</span>';
+
+          html += '<div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800/60">' +
+            '<span class="font-bold text-xs text-slate-200 flex-1 text-right truncate">' + m.h + '</span>' +
+            '<div class="flex flex-col items-center px-3 min-w-[70px]">' +
+              '<span class="font-extrabold text-white text-sm">' + m.s + '</span>' +
+              badge +
+            '</div>' +
+            '<span class="font-bold text-xs text-slate-200 flex-1 text-left truncate">' + m.a + '</span>' +
+          '</div>';
+        }
+
+        html += '</div>';
+        card.innerHTML = html;
+        box.appendChild(card);
+      }
+    }
+
+    function setDay(d) {
+      currentDay = d;
+      document.getElementById('btn-yesterday').className = d === 'yesterday' ? 'flex-1 py-1.5 rounded-xl bg-emerald-600 text-white font-bold' : 'flex-1 py-1.5 rounded-xl bg-slate-800 text-slate-400 font-bold';
+      document.getElementById('btn-today').className = d === 'today' ? 'flex-1 py-1.5 rounded-xl bg-emerald-600 text-white font-bold' : 'flex-1 py-1.5 rounded-xl bg-slate-800 text-slate-400 font-bold';
+      document.getElementById('btn-tomorrow').className = d === 'tomorrow' ? 'flex-1 py-1.5 rounded-xl bg-emerald-600 text-white font-bold' : 'flex-1 py-1.5 rounded-xl bg-slate-800 text-slate-400 font-bold';
+      draw();
+    }
+
+    draw();
+  </script>
+</body>
+</html>
